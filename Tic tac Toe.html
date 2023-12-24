@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .game-container {
+            text-align: center;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 2em;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+
+        .reset-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1 id="turn">X's Turn</h1>
+    <div class="row">
+        <div class="col cell" onclick="makeMove(this)"></div>
+        <div class="col cell" onclick="makeMove(this)"></div>
+        <div class="col cell" onclick="makeMove(this)"></div>
+    </div>
+    <div class="row">
+        <div class="col cell" onclick="makeMove(this)"></div>
+        <div class="col cell" onclick="makeMove(this)"></div>
+        <div class="col cell" onclick="makeMove(this)"></div>
+    </div>
+    <div class="row">
+        <div class="col cell" onclick="makeMove(this)"></div>
+        <div class="col cell" onclick="makeMove(this)"></div>
+        <div class="col cell" onclick="makeMove(this)"></div>
+    </div>
+    <button class="btn btn-primary reset-button" onclick="resetGame()">Restart Game</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    let currentPlayer = 'X';
+    let cells = document.querySelectorAll('.cell');
+    let gameOver = false;
+
+    function makeMove(cell) {
+        if (!cell.textContent && !gameOver) {
+            cell.textContent = currentPlayer;
+            checkWinner();
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            document.getElementById('turn').textContent = currentPlayer + "'s Turn";
+        }
+    }
+
+    function checkWinner() {
+        let combinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]             // Diagonals
+        ];
+
+        for (let combination of combinations) {
+            let [a, b, c] = combination;
+            if (cells[a].textContent && cells[a].textContent === cells[b].textContent && cells[a].textContent === cells[c].textContent) {
+                gameOver = true;
+                displayWinner(cells[a].textContent);
+                return;
+            }
+        }
+
+        if ([...cells].every(cell => cell.textContent)) {
+            gameOver = true;
+            displayWinner('Draw');
+        }
+    }
+
+    function displayWinner(winner) {
+        let message = winner === 'Draw' ? 'It\'s a Draw!' : `Player ${winner} Wins!`;
+        let alertClass = winner === 'Draw' ? 'alert-warning' : 'alert-success';
+        let alertElement = `<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                                <strong>${message}</strong>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>`;
+        document.body.insertAdjacentHTML('afterbegin', alertElement);
+    }
+
+    function resetGame() {
+        currentPlayer = 'X';
+        gameOver = false;
+        cells.forEach(cell => cell.textContent = '');
+        document.getElementById('turn').textContent = "X's Turn";
+        document.querySelector('.alert')?.remove(); // Remove the alert if it exists
+    }
+</script>
+</body>
+</html>
